@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Expo (Front-end)
+front-end/.expo/
+front-end/dist/
+front-end/web-build/
+front-end/expo-env.d.ts
+
+# Next.js (Back-end)
+back-end/.next/
+back-end/out/
+back-end/build/
+
+# Native (Expo)
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+front-end/ios/
+front-end/android/
+
+# Metro
+.metro-health-check*
+
+# Testing
+coverage/
+
+# Debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# Environment variables
+.env
+.env*.local
+back-end/.env
+front-end/.env
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel (Next.js deployment)
+.vercel
+
+# Prisma (Back-end database)
+back-end/prisma/*.db
+back-end/prisma/*.db-journal
+back-end/generated/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

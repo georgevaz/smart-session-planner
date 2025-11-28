@@ -289,7 +289,7 @@ const DashboardScreen: React.FC = () => {
             <Card
               type="progress"
               variant="blue"
-              size="lg"
+              size="full"
               noPadding
               scheduled={stats.overview.totalSessions}
               completed={stats.overview.completedSessions}
@@ -310,8 +310,9 @@ const DashboardScreen: React.FC = () => {
             type="config"
             configType="types"
             variant="green"
-            size="sm"
+            size="auto"
             noPadding
+            style={styles.configCard}
             totalTypes={5}
             types={[
               { name: 'Deep Work', count: 12 },
@@ -323,8 +324,9 @@ const DashboardScreen: React.FC = () => {
             type="config"
             configType="availability"
             variant="purple"
-            size="sm"
+            size="auto"
             noPadding
+            style={styles.configCard}
             availabilityText="Mon–Thu mornings, Sat mid-day"
             weekAvailability={[true, true, true, true, false, true, false]}
             onEdit={() => setAvailabilityModalVisible(true)}
@@ -409,6 +411,9 @@ const styles = StyleSheet.create({
   configRow: {
     flexDirection: 'row',
     gap: theme.spacing.lg,
+  },
+  configCard: {
+    flex: 0.5,
   },
 });
 

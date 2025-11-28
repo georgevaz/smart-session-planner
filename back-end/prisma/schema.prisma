@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SessionType {
+  id        String   @id @default(uuid())
+  name      String
+  category  String
+  priority  Int      // 1-5
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sessions Session[]
+}
+
+model Session {
+  id            String      @id @default(uuid())
+  sessionTypeId String
+  scheduledAt   DateTime
+  duration      Int         // duration in minutes
+  completed     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  sessionType SessionType @relation(fields: [sessionTypeId], references: [id], onDelete: Cascade)
+
+  @@index([sessionTypeId])
+  @@index([scheduledAt])
+}
+
+model AvailabilityWindow {
+  id        String   @id @default(uuid())
+  dayOfWeek Int      // 0-6 (Sunday-Saturday)
+  startTime String   // HH:MM format
+  endTime   String   // HH:MM format
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -155,13 +155,26 @@ const DashboardScreen: React.FC = () => {
   }, []);
 
   const handleToggleComplete = useCallback(async (session: Session) => {
+    // Optimistic update - update UI immediately
+    const updatedCompleted = !session.completed;
+    setSessions(prevSessions =>
+      prevSessions.map(s =>
+        s.id === session.id ? { ...s, completed: updatedCompleted } : s
+      )
+    );
+
     try {
+      // Update in backend
       await updateSession(session.id, {
-        completed: !session.completed,
+        completed: updatedCompleted,
       });
-      // Reload data to reflect the change
-      await loadData();
     } catch (error: any) {
+      // Revert on error
+      setSessions(prevSessions =>
+        prevSessions.map(s =>
+          s.id === session.id ? { ...s, completed: session.completed } : s
+        )
+      );
       Alert.alert('Error', error.message || 'Failed to update session');
     }
   }, []);

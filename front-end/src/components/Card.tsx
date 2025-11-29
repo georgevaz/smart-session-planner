@@ -373,7 +373,7 @@ function renderProgressCard(props: ProgressCardProps) {
         <Icon icon={CalendarSvg} size={16} color={colors.primary} />
         <View style={styles.progressSpacingText}>
           <Text style={[typography.body, { color: colors.primary }]}>
-            {averageSpacing} days
+            {averageSpacing ? `${averageSpacing} days` : '--'}
           </Text>
           <Text style={typography.caption}>Average spacing between sessions</Text>
         </View>

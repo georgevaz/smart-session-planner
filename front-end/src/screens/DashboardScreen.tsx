@@ -16,6 +16,7 @@ import {
   ArrowSvg,
 } from '../components/Icon';
 import AvailabilityScreen from './AvailabilityScreen';
+import SessionTypesScreen from './SessionTypesScreen';
 import {
   Session,
   Suggestion,
@@ -73,6 +74,7 @@ const DashboardScreen: React.FC = () => {
   const [selectedView, setSelectedView] = useState<'today' | 'week'>('today');
   const [activeNavItem, setActiveNavItem] = useState('home');
   const [availabilityModalVisible, setAvailabilityModalVisible] = useState(false);
+  const [sessionTypesModalVisible, setSessionTypesModalVisible] = useState(false);
 
   const [sessions, setSessions] = useState<Session[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -384,7 +386,7 @@ const DashboardScreen: React.FC = () => {
               name: t.name,
               count: t.count,
             })) || []}
-            onManage={() => console.log('Manage types')}
+            onManage={() => setSessionTypesModalVisible(true)}
           />
           <Card
             type="config"
@@ -410,6 +412,14 @@ const DashboardScreen: React.FC = () => {
         visible={availabilityModalVisible}
         onClose={() => {
           setAvailabilityModalVisible(false);
+          loadData();
+        }}
+      />
+
+      <SessionTypesScreen
+        visible={sessionTypesModalVisible}
+        onClose={() => {
+          setSessionTypesModalVisible(false);
           loadData();
         }}
       />

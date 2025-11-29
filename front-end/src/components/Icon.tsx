@@ -16,6 +16,8 @@ export { default as MugSvg } from '../assets/icons/mug.svg';
 export { default as WeightSvg } from '../assets/icons/weight.svg';
 export { default as ArrowSvg } from '../assets/icons/arrow.svg';
 export { default as LineGraphSvg } from '../assets/icons/line-graph.svg';
+export { default as TrashSvg } from '../assets/icons/trash.svg';
+export { default as CloseSvg } from '../assets/icons/close.svg';
 
 interface IconProps {
   icon: React.FC<SvgProps>;

@@ -12,7 +12,7 @@ import {
   Modal,
 } from 'react-native';
 import { Card } from '../components/Card';
-import { Icon, PlusSvg, TrashSvg, CloseSvg } from '../components/Icon';
+import { Icon, PlusSvg, TrashSvg } from '../components/Icon';
 import { PriorityDots } from '../components/PriorityDots';
 import {
   getSessionTypes,
@@ -131,10 +131,13 @@ const SessionTypesScreen: React.FC<{ visible: boolean; onClose: () => void }> = 
       <SafeAreaView style={styles.safe}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={theme.typography.h1}>Session Types</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Icon icon={CloseSvg} size={24} color={theme.colors.primary} />
+            <Text style={[theme.typography.body, { color: theme.colors.buttonPrimary }]}>
+              Close
+            </Text>
           </TouchableOpacity>
+          <Text style={theme.typography.h1}>Session Types</Text>
+          <View style={{ width: 50 }} />
         </View>
 
         <ScrollView
@@ -311,7 +314,7 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.border,
   },
   closeButton: {
-    padding: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
   },
   scrollContent: {
     padding: theme.spacing.xl,

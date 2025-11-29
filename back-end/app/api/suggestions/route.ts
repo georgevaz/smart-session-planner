@@ -45,6 +45,14 @@ type SessionTypeStats = {
 // ==================== HELPER FUNCTIONS ====================
 
 /**
+ * Get the current date/time for the application
+ * Using a static date (Monday, November 17, 2025) for demo purposes
+ */
+function getCurrentDate(): Date {
+  return new Date('2025-11-17T12:00:00');
+}
+
+/**
  * Converts time string (HH:MM) and day of week to a Date object for a specific week
  */
 function timeStringToDate(timeStr: string, dayOfWeek: number, baseDate: Date): Date {
@@ -123,7 +131,7 @@ async function getSessionTypeStats(sessionTypeId: string): Promise<SessionTypeSt
     throw new Error('Session type not found');
   }
 
-  const now = new Date();
+  const now = getCurrentDate();
   const upcomingSessions = sessionType.sessions.filter(
     (s) => new Date(s.scheduledAt) >= now && !s.completed
   );
@@ -173,7 +181,7 @@ async function generateCandidateSlots(
   const slots: TimeSlot[] = [];
   const availabilityWindows = await prisma.availabilityWindow.findMany();
 
-  const today = new Date();
+  const today = getCurrentDate();
   today.setHours(0, 0, 0, 0);
 
   // For each day in the next N days
@@ -193,7 +201,7 @@ async function generateCandidateSlots(
       const windowEnd = timeStringToDate(window.endTime, dayOfWeek, currentDate);
 
       // Skip if window is in the past
-      if (windowEnd < new Date()) continue;
+      if (windowEnd < getCurrentDate()) continue;
 
       // Generate slots within this window (every 30 minutes)
       const slotInterval = 30; // minutes
@@ -203,7 +211,7 @@ async function generateCandidateSlots(
         const slotEnd = new Date(slotStart.getTime() + sessionDuration * 60000);
 
         // Only include slots that start in the future
-        if (slotStart > new Date()) {
+        if (slotStart > getCurrentDate()) {
           slots.push({
             start: new Date(slotStart),
             end: slotEnd,
@@ -320,7 +328,7 @@ async function scoreTimeSlot(
   // ========== FACTOR 6: URGENCY ==========
   // Sooner is generally better (with diminishing returns)
   const daysUntilSlot =
-    (slot.start.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+    (slot.start.getTime() - getCurrentDate().getTime()) / (1000 * 60 * 60 * 24);
   const urgencyScore = Math.max(0, 40 - daysUntilSlot * 3);
   score += urgencyScore;
 
@@ -384,7 +392,7 @@ export async function GET(request: NextRequest) {
     const existingSessions = await prisma.session.findMany({
       where: {
         scheduledAt: {
-          gte: new Date(),
+          gte: getCurrentDate(),
         },
       },
       include: {

@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 /**
+ * Get the current date/time for the application
+ * Using a static date (Monday, November 17, 2025) for demo purposes
+ */
+function getCurrentDate(): Date {
+  return new Date('2025-11-17T12:00:00');
+}
+
+/**
  * GET /api/stats
  *
  * Returns overall progress and statistics for the user's sessions.
@@ -22,7 +30,7 @@ export async function GET() {
       },
     });
 
-    const now = new Date();
+    const now = getCurrentDate();
     const completedSessions = allSessions.filter((s) => s.completed);
     const upcomingSessions = allSessions.filter(
       (s) => new Date(s.scheduledAt) >= now && !s.completed
@@ -78,7 +86,7 @@ export async function GET() {
       const sortedCompleted = completedSessions
         .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
 
-      const today = new Date();
+      const today = getCurrentDate();
       today.setHours(0, 0, 0, 0);
 
       let checkDate = new Date(today);

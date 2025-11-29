@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+/**
+ * Get the current date/time for the application
+ * Using a static date (Monday, November 17, 2025) for demo purposes
+ */
+function getCurrentDate(): Date {
+  return new Date('2025-11-17T12:00:00');
+}
+
 // Helper function to check for session conflicts
 async function checkConflicts(
   scheduledAt: Date,
@@ -55,7 +63,7 @@ export async function GET(request: NextRequest) {
 
     // Filter for upcoming sessions (not completed, scheduled in the future)
     if (upcoming) {
-      where.scheduledAt = { gte: new Date() };
+      where.scheduledAt = { gte: getCurrentDate() };
       where.completed = false;
     }
 

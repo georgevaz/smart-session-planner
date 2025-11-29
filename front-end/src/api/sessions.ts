@@ -209,10 +209,15 @@ export function formatDateTimeRange(start: string, end: string): string {
   return `${formatDate(start)} · ${formatTime(start)}–${formatTime(end)}`;
 }
 
+// Get the current date for the application (Monday, November 17, 2025 for demo)
+function getCurrentDate(): Date {
+  return new Date('2025-11-17T12:00:00');
+}
+
 // Get relative day description (Today, Tomorrow, etc.)
 export function getRelativeDay(dateString: string): string {
   const date = new Date(dateString);
-  const today = new Date();
+  const today = getCurrentDate();
   today.setHours(0, 0, 0, 0);
   date.setHours(0, 0, 0, 0);
 
@@ -221,6 +226,9 @@ export function getRelativeDay(dateString: string): string {
 
   if (diffDays === 0) return 'Today';
   if (diffDays === 1) return 'Tomorrow';
-  if (diffDays < 7) return date.toLocaleDateString('en-US', { weekday: 'long' });
+  if (diffDays < 7) {
+    // For days like "Wed" instead of "Wednesday"
+    return date.toLocaleDateString('en-US', { weekday: 'short' });
+  }
   return formatDate(dateString);
 }

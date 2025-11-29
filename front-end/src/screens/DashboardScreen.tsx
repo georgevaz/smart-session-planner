@@ -28,6 +28,8 @@ import {
 } from '../api/sessions';
 import { getStats, Stats } from '../api/stats';
 import { getSessionTypes } from '../api/sessionTypes';
+import { getAvailabilityWindows, AvailabilityWindow } from '../api/availability';
+import { summarizeAvailability, getWeekAvailability } from '../utils/availabilityHelpers';
 import theme from '../theme';
 
 // Get the current date for the application (Monday, November 17, 2025 for demo)
@@ -75,6 +77,7 @@ const DashboardScreen: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [availabilityWindows, setAvailabilityWindows] = useState<AvailabilityWindow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -89,17 +92,19 @@ const DashboardScreen: React.FC = () => {
       // Get today's date range for filtering sessions
       const { today, tomorrow } = getTodayRange();
 
-      const [sessionsData, statsData, sessionTypes] = await Promise.all([
+      const [sessionsData, statsData, sessionTypes, availabilityData] = await Promise.all([
         getSessions({
           startDate: today.toISOString(),
           endDate: tomorrow.toISOString(),
         }),
         getStats(),
         getSessionTypes(),
+        getAvailabilityWindows(),
       ]);
 
       setSessions(sessionsData);
       setStats(statsData);
+      setAvailabilityWindows(availabilityData);
 
       // Get suggestions for all session types
       if (sessionTypes.length > 0) {
@@ -386,8 +391,8 @@ const DashboardScreen: React.FC = () => {
             size="auto"
             noPadding
             style={styles.configCard}
-            availabilityText="Mon–Thu mornings, Sat mid-day"
-            weekAvailability={[true, true, true, true, false, true, false]}
+            availabilityText={summarizeAvailability(availabilityWindows)}
+            weekAvailability={getWeekAvailability(availabilityWindows)}
             onEdit={() => setAvailabilityModalVisible(true)}
           />
         </View>
@@ -401,7 +406,10 @@ const DashboardScreen: React.FC = () => {
 
       <AvailabilityScreen
         visible={availabilityModalVisible}
-        onClose={() => setAvailabilityModalVisible(false)}
+        onClose={() => {
+          setAvailabilityModalVisible(false);
+          loadData();
+        }}
       />
     </SafeAreaView>
   );

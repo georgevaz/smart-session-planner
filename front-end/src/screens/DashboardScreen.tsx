@@ -27,7 +27,7 @@ import {
   getRelativeDay,
 } from '../api/sessions';
 import { getStats, Stats } from '../api/stats';
-import { getSessionTypes } from '../api/sessionTypes';
+import { getSessionTypes, SessionType } from '../api/sessionTypes';
 import { getAvailabilityWindows, AvailabilityWindow } from '../api/availability';
 import { summarizeAvailability, getWeekAvailability } from '../utils/availabilityHelpers';
 import theme from '../theme';
@@ -77,6 +77,7 @@ const DashboardScreen: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [sessionTypes, setSessionTypes] = useState<SessionType[]>([]);
   const [availabilityWindows, setAvailabilityWindows] = useState<AvailabilityWindow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -92,7 +93,7 @@ const DashboardScreen: React.FC = () => {
       // Get today's date range for filtering sessions
       const { today, tomorrow } = getTodayRange();
 
-      const [sessionsData, statsData, sessionTypes, availabilityData] = await Promise.all([
+      const [sessionsData, statsData, sessionTypesData, availabilityData] = await Promise.all([
         getSessions({
           startDate: today.toISOString(),
           endDate: tomorrow.toISOString(),
@@ -104,13 +105,14 @@ const DashboardScreen: React.FC = () => {
 
       setSessions(sessionsData);
       setStats(statsData);
+      setSessionTypes(sessionTypesData);
       setAvailabilityWindows(availabilityData);
 
       // Get suggestions for all session types
-      if (sessionTypes.length > 0) {
+      if (sessionTypesData.length > 0) {
         const allSuggestions: Suggestion[] = [];
 
-        for (const sessionType of sessionTypes) {
+        for (const sessionType of sessionTypesData) {
           try {
             const suggestionsData = await getSuggestions({
               sessionTypeId: sessionType.id,
@@ -377,11 +379,11 @@ const DashboardScreen: React.FC = () => {
             size="auto"
             noPadding
             style={styles.configCard}
-            totalTypes={5}
-            types={[
-              { name: 'Deep Work', count: 12 },
-              { name: 'Workout', count: 8 },
-            ]}
+            totalTypes={sessionTypes.length}
+            types={stats?.byType.slice(0, 5).map(t => ({
+              name: t.name,
+              count: t.count,
+            })) || []}
             onManage={() => console.log('Manage types')}
           />
           <Card

@@ -414,7 +414,7 @@ function renderConfigCard(props: ConfigCardProps) {
           </Text>
 
           <View style={styles.configTypesList}>
-            {types?.slice(0, 2).map((type, index) => (
+            {types?.slice(0, 3).map((type, index) => (
               <View key={index} style={styles.configTypeRow}>
                 <Text style={[typography.caption, { color: colors.primary }]}>
                   {type.name}

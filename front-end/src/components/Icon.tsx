@@ -37,5 +37,5 @@ interface IconProps {
  * <Icon icon={CheckSvg} size={20} color={colors.success} />
  */
 export function Icon({ icon: SvgComponent, size = 24, color = colors.primary }: IconProps) {
-  return <SvgComponent width={size} height={size} stroke={color} fill="none" />;
+  return <SvgComponent width={size} height={size} color={color} fill="none" />;
 }

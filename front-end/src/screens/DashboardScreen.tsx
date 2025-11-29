@@ -363,11 +363,24 @@ const DashboardScreen: React.FC = () => {
               scheduled={stats.overview.totalSessions}
               completed={stats.overview.completedSessions}
               completionRate={Math.round(stats.overview.completionRate * 100)}
-              sessionsByType={stats.byType.map(t => ({
-                name: t.name,
-                count: t.count,
-                color: t.color,
-              }))}
+              sessionsByType={stats.byType
+                .filter(t => t.completedSessions > 0)
+                .map((t, index) => {
+                  // Assign colors based on index
+                  const colors = [
+                    theme.colors.accentPurple,
+                    theme.colors.accentGreen,
+                    theme.colors.accentBlue,
+                    '#FB923C', // orange
+                    '#F59E0B', // amber
+                    '#EC4899', // pink
+                  ];
+                  return {
+                    name: t.name,
+                    count: t.completedSessions,
+                    color: colors[index % colors.length],
+                  };
+                })}
               averageSpacing={parseFloat(stats.derivedMetrics.averageSpacing)}
             />
           </View>

@@ -13,6 +13,7 @@ import {
   GearSvg,
   BrainSvg,
   MugSvg,
+  ArrowSvg,
 } from '../components/Icon';
 import AvailabilityScreen from './AvailabilityScreen';
 import {
@@ -21,15 +22,22 @@ import {
   getSessions,
   getSuggestions,
   acceptSuggestion,
+  updateSession,
   formatTime,
   getRelativeDay,
 } from '../api/sessions';
 import { getStats, Stats } from '../api/stats';
+import { getSessionTypes } from '../api/sessionTypes';
 import theme from '../theme';
+
+// Get the current date for the application (Monday, November 17, 2025 for demo)
+const getCurrentDate = () => {
+  return new Date('2025-11-17T12:00:00');
+};
 
 // Helper function to get today's date range
 const getTodayRange = () => {
-  const today = new Date();
+  const today = getCurrentDate();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -78,24 +86,44 @@ const DashboardScreen: React.FC = () => {
     try {
       setLoading(true);
 
-      const [sessionsData, statsData] = await Promise.all([
-        getSessions({ upcoming: true }),
+      // Get today's date range for filtering sessions
+      const { today, tomorrow } = getTodayRange();
+
+      const [sessionsData, statsData, sessionTypes] = await Promise.all([
+        getSessions({
+          startDate: today.toISOString(),
+          endDate: tomorrow.toISOString(),
+        }),
         getStats(),
+        getSessionTypes(),
       ]);
 
       setSessions(sessionsData);
       setStats(statsData);
 
-      // Get suggestions for the first session type if available
-      if (sessionsData.length > 0) {
-        const firstSessionType = sessionsData[0].sessionType;
-        const suggestionsData = await getSuggestions({
-          sessionTypeId: firstSessionType.id,
-          duration: 60,
-          daysAhead: 7,
-          limit: 3,
-        });
-        setSuggestions(suggestionsData.suggestions);
+      // Get suggestions for all session types
+      if (sessionTypes.length > 0) {
+        const allSuggestions: Suggestion[] = [];
+
+        for (const sessionType of sessionTypes) {
+          try {
+            const suggestionsData = await getSuggestions({
+              sessionTypeId: sessionType.id,
+              duration: sessionType.name === 'Language Practice' ? 30 : 60,
+              daysAhead: 7,
+              limit: 1, // Get top suggestion for each type
+            });
+            if (suggestionsData.suggestions.length > 0) {
+              allSuggestions.push(suggestionsData.suggestions[0]);
+            }
+          } catch (error) {
+            console.error(`Error getting suggestions for ${sessionType.name}:`, error);
+          }
+        }
+
+        // Sort by score and take top 3
+        allSuggestions.sort((a, b) => b.score - a.score);
+        setSuggestions(allSuggestions.slice(0, 3));
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -124,6 +152,18 @@ const DashboardScreen: React.FC = () => {
 
   const handleAdjust = useCallback((suggestion: Suggestion) => {
     Alert.alert('Adjust Time', 'Time adjustment feature coming soon!');
+  }, []);
+
+  const handleToggleComplete = useCallback(async (session: Session) => {
+    try {
+      await updateSession(session.id, {
+        completed: !session.completed,
+      });
+      // Reload data to reflect the change
+      await loadData();
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to update session');
+    }
   }, []);
 
   // Memoized today's sessions calculation
@@ -174,7 +214,7 @@ const DashboardScreen: React.FC = () => {
         <View style={styles.section}>
           <Header
             title="Dashboard"
-            date={new Date().toLocaleDateString('en-US', {
+            date={getCurrentDate().toLocaleDateString('en-US', {
               weekday: 'long',
               month: 'short',
               day: 'numeric'
@@ -212,7 +252,12 @@ const DashboardScreen: React.FC = () => {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={theme.typography.h2}>Smart Suggestions</Text>
-              {refreshing && <ActivityIndicator size="small" color={theme.colors.buttonPrimary} />}
+              <View style={styles.sectionHeaderRight}>
+                {refreshing && <ActivityIndicator size="small" color={theme.colors.buttonPrimary} />}
+                <TouchableOpacity onPress={() => Alert.alert('View All Suggestions', 'Feature coming soon!')}>
+                  <Icon icon={ArrowSvg} size={20} color={theme.colors.tertiary} />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <ScrollView
@@ -228,7 +273,7 @@ const DashboardScreen: React.FC = () => {
                   <Card
                     key={suggestion.suggestionId || index}
                     type="suggestion"
-                    variant="purple"
+                    color="purple"
                     size="md"
                     noPadding
                     title={suggestion.sessionType.name}
@@ -267,7 +312,7 @@ const DashboardScreen: React.FC = () => {
                     <Card
                       key={session.id}
                       type="session"
-                      size="lg"
+                      size="full"
                       noPadding
                       bordered
                       title={session.sessionType.name}
@@ -275,6 +320,7 @@ const DashboardScreen: React.FC = () => {
                       iconBgColor={bgColor}
                       icon={icon}
                       status={session.completed ? 'completed' : 'upcoming'}
+                      onToggleComplete={() => handleToggleComplete(session)}
                     />
                   );
                 })}
@@ -288,7 +334,7 @@ const DashboardScreen: React.FC = () => {
           <View style={styles.section}>
             <Card
               type="progress"
-              variant="blue"
+              color="blue"
               size="full"
               noPadding
               scheduled={stats.overview.totalSessions}
@@ -309,7 +355,7 @@ const DashboardScreen: React.FC = () => {
           <Card
             type="config"
             configType="types"
-            variant="green"
+            color="green"
             size="auto"
             noPadding
             style={styles.configCard}
@@ -323,7 +369,7 @@ const DashboardScreen: React.FC = () => {
           <Card
             type="config"
             configType="availability"
-            variant="purple"
+            color="purple"
             size="auto"
             noPadding
             style={styles.configCard}
@@ -365,6 +411,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  sectionHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
   },
   summaryInner: {
     flexDirection: 'row',

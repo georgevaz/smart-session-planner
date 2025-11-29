@@ -4,7 +4,7 @@ import { colors, radius, spacing, typography } from '../theme';
 import { PriorityDots } from './PriorityDots';
 import { Icon, CalendarSvg, CheckSvg, ClockSvg, TargetSvg } from './Icon';
 
-export type CardVariant =
+export type CardColor =
   | 'default'
   | 'purple'
   | 'blue'
@@ -21,7 +21,7 @@ export type CardType = 'default' | 'suggestion' | 'session' | 'progress' | 'conf
 
 // Base props shared by all card types
 interface BaseCardProps {
-  variant?: CardVariant;
+  color?: CardColor;
   size?: CardSize;
   padding?: keyof typeof spacing;
   paddingHorizontal?: keyof typeof spacing;
@@ -62,6 +62,7 @@ interface SessionCardProps extends BaseCardProps {
   icon: React.ReactNode;
   iconBgColor: string;
   status?: 'completed' | 'upcoming';
+  onToggleComplete?: () => void;
 }
 
 // Progress card
@@ -93,7 +94,7 @@ export type CardProps =
   | ProgressCardProps
   | ConfigCardProps;
 
-const VARIANT_COLORS: Record<CardVariant, string> = {
+const COLOR_MAP: Record<CardColor, string> = {
   default: colors.surface,
   purple: colors.cardPurple,
   blue: colors.cardBlue,
@@ -135,7 +136,7 @@ const RADIUS_VALUES: Record<CardRadius, number> = {
  */
 export function Card(props: CardProps) {
   const {
-    variant = 'default',
+    color = 'default',
     size = 'auto',
     padding,
     paddingHorizontal,
@@ -153,7 +154,7 @@ export function Card(props: CardProps) {
 
   const type = props.type || 'default';
 
-  const backgroundColor = VARIANT_COLORS[variant];
+  const backgroundColor = COLOR_MAP[color];
   const width = SIZE_WIDTHS[size];
   const borderRadiusValue = RADIUS_VALUES[customRadius];
 
@@ -244,7 +245,7 @@ function renderSuggestionCard(props: SuggestionCardProps) {
         <View style={styles.suggestionHeaderContent}>
           <Text style={typography.h3}>{title}</Text>
           <View style={styles.timeRow}>
-            <Icon icon={CalendarSvg} size={16} color={colors.tertiary} />
+            <Icon icon={ClockSvg} size={16} color={colors.tertiary} />
             <Text style={[typography.body, { color: colors.tertiary }]}>{time}</Text>
           </View>
         </View>
@@ -277,7 +278,7 @@ function renderSuggestionCard(props: SuggestionCardProps) {
 }
 
 function renderSessionCard(props: SessionCardProps) {
-  const { title, time, icon, iconBgColor, status = 'upcoming' } = props;
+  const { title, time, icon, iconBgColor, status = 'upcoming', onToggleComplete } = props;
   const isCompleted = status === 'completed';
 
   return (
@@ -294,11 +295,18 @@ function renderSessionCard(props: SessionCardProps) {
         </View>
       </View>
 
-      {isCompleted && (
-        <View style={styles.sessionCheckmark}>
-          <Icon icon={CheckSvg} size={12} color={colors.surface} />
-        </View>
-      )}
+      <TouchableOpacity
+        style={[
+          styles.sessionCheckbox,
+          isCompleted && styles.sessionCheckboxChecked,
+        ]}
+        onPress={onToggleComplete}
+        activeOpacity={0.7}
+      >
+        {isCompleted && (
+          <Icon icon={CheckSvg} size={16} color={colors.surface} />
+        )}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -542,13 +550,19 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 4,
   },
-  sessionCheckmark: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: colors.accentDark,
+  sessionCheckbox: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: colors.borderLight,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.surface,
+  },
+  sessionCheckboxChecked: {
+    backgroundColor: colors.accentDark,
+    borderColor: colors.accentDark,
   },
 
   // Progress card styles

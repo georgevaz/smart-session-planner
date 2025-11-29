@@ -106,3 +106,10 @@ cp .env.example .env
 **Single User**: The application currently doesn't support authentication or multiple users. All data is global.
 
 **No Time Zone Handling**: All times are treated as local time without time zone conversion.
+
+**Limited Navigation**: The application is a single-screen demo. Navigation elements are non-functional, including:
+- Bottom navigation bar (Calendar, Stats, Settings tabs)
+- "View All Suggestions" navigation arrow
+- "Add Session" button (+)
+- "Manage Types" configuration button
+- "Adjust Time" feature on suggestion cards

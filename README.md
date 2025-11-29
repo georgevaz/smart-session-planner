@@ -10,7 +10,7 @@ An intelligent session scheduling app that helps users manage and optimize their
 - **Progress Tracking**: View completion rates and statistics across different session types
 - **Interactive Dashboard**: Real-time view of today's sessions and upcoming suggestions
 
-## Setup Instructions
+## Quick Start
 
 ### Prerequisites
 
@@ -18,84 +18,84 @@ An intelligent session scheduling app that helps users manage and optimize their
 - npm or yarn
 - Expo CLI (for mobile development)
 
-### Front-end Setup
+### Automated Setup (Recommended)
 
-1. From the root directory, navigate to the front-end:
+Run the setup script from the project root:
+
+```bash
+./setup.sh
+```
+
+This will:
+- Check for Node.js installation
+- Copy environment variable files
+- Install all dependencies
+- Set up the database with demo data
+
+Then start the application:
+
+1. **Start the back-end** (in one terminal):
    ```bash
-   cd front-end
+   cd back-end && npm run dev
    ```
 
-2. Install dependencies:
+2. **Start the front-end** (in another terminal):
    ```bash
-   npm install
+   cd front-end && npm start
    ```
 
-3. Start the Expo development server:
-   ```bash
-   npm start
-   ```
-
-4. Run on your preferred platform:
+3. **Run on your preferred platform**:
    - Press `i` for iOS simulator
    - Press `a` for Android emulator
    - Press `w` for web browser
    - Scan QR code with Expo Go app on your physical device
 
-### Back-end Setup
+The API will be available at `http://localhost:3001`
 
-1. From the root directory, navigate to the back-end:
-   ```bash
-   cd back-end
-   ```
+### Manual Setup
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+If you prefer to set up manually:
 
-3. Generate Prisma client:
-   ```bash
-   npm run db:generate
-   ```
+#### 1. Environment Variables
 
-4. Push the database schema:
-   ```bash
-   npm run db:push
-   ```
+Copy the example environment files:
 
-5. Seed the database with demo data:
-   ```bash
-   npm run db:seed
-   ```
-
-6. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-   The API will be available at `http://localhost:3001`
-
-## Environment Variables
-
-### Back-end (`back-end/.env`)
-
-Copy `.env.example` to `.env`:
 ```bash
-cp .env.example .env
+# Back-end
+cp back-end/.env.example back-end/.env
+
+# Front-end
+cp front-end/.env.example front-end/.env
 ```
 
-- `DATABASE_URL`: Database connection string
-  - Default: `file:./dev.db` (SQLite for local development)
+**Back-end (`back-end/.env`)**:
+- `DATABASE_URL`: Database connection string (Default: `file:./dev.db`)
 
-### Front-end (`front-end/.env`)
+**Front-end (`front-end/.env`)**:
+- `EXPO_PUBLIC_API_URL`: Back-end API URL (Default: `http://localhost:3001`)
 
-Copy `.env.example` to `.env`:
+#### 2. Back-end Setup
+
 ```bash
-cp .env.example .env
+cd back-end
+npm install
+npm run db:generate
+npm run db:push
+npm run db:seed
+npm run dev
 ```
 
-- `EXPO_PUBLIC_API_URL`: Back-end API URL
-  - Default: `http://localhost:3001`
+#### 3. Front-end Setup
+
+In a new terminal:
+
+```bash
+cd front-end
+npm install
+npm start
+```
+
+Then press `i` for iOS, `a` for Android, or `w` for web browser
 
 ## Assumptions and Limitations
 

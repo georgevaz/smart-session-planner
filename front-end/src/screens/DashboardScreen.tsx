@@ -276,9 +276,9 @@ const DashboardScreen: React.FC = () => {
               <Text style={theme.typography.h2}>Smart Suggestions</Text>
               <View style={styles.sectionHeaderRight}>
                 {refreshing && <ActivityIndicator size="small" color={theme.colors.buttonPrimary} />}
-                <TouchableOpacity onPress={() => Alert.alert('View All Suggestions', 'Feature coming soon!')}>
+                {/* <TouchableOpacity onPress={() => Alert.alert('View All Suggestions', 'Feature coming soon!')}>
                   <Icon icon={ArrowSvg} size={20} color={theme.colors.tertiary} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </View>
 
@@ -316,9 +316,10 @@ const DashboardScreen: React.FC = () => {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={theme.typography.h2}>Today's Sessions</Text>
+              {/* TODO UI for add feature 
               <TouchableOpacity style={styles.addButton}>
                 <Icon icon={PlusSvg} size={20} color={theme.colors.surface} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
 
             {todaySessions.length === 0 ? (

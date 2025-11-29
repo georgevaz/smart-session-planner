@@ -265,13 +265,15 @@ function renderSuggestionCard(props: SuggestionCardProps) {
           <Text style={[typography.label, { color: colors.surface }]}>Accept</Text>
         </TouchableOpacity>
 
+        
+        {/* TODO UI for adjustment feature
         <TouchableOpacity
           style={styles.adjustButton}
           onPress={onAdjust}
           activeOpacity={0.8}
         >
           <Text style={[typography.label, { color: colors.buttonText }]}>Adjust</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
